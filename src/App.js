@@ -3,14 +3,21 @@ import "./style.css";
 
 export default function App() {
   return (
-    <div>
-      <h1>Hi Haseeb!</h1>
-      <p>Can you read this? :)</p>
+    <style>
+.content {
+  max-width: 500px;
+  margin: auto;
+}
+</style>
+    <div class="content">
+	<img src="CalendarLogo.png" alt="Logo"/>
+	<br /><br />
+	<hr border: 450px solid Black; border-radius: 100px>
 
       <label for="username"> Username:</label>
       <input type="text" id="fname" name="fname" />
       <br />
-      <label for="password">Password12345 :</label>
+      <label for="password">Password :</label>
       <input type="text" id="lname" name="lname" />
       <br />
       <input type="submit" value="Submit" />
