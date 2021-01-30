@@ -7,7 +7,7 @@ export default function App() {
       <h1>Hi Haseeb!</h1>
       <p>Can you read this? :)</p>
 
-      <label for="username"> Username12345:</label>
+      <label for="username"> Username:</label>
       <input type="text" id="fname" name="fname" />
       <br />
       <label for="password">Password12345 :</label>
