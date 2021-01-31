@@ -10,7 +10,7 @@ export default function App() {
 	<br /><br />
 
 
-      <label for="username"> Username:</label>
+      <label for="username"> Username Please:</label>
       <input type="text" id="fname" name="fname" />
       <br />
       <label for="password">Password :</label>
