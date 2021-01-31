@@ -6,6 +6,7 @@ export default function App() {
     
     <div class="content">
 	<img src="CalendarLogo.png" alt="Logo"/>
+  <img alt="logo" src={require('./src/CalendarLogo.png')} />
 	<br /><br />
 
 
