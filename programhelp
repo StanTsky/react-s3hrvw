@@ -1,0 +1,259 @@
+package com.company;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+/*Katlyn Becvar
+OOP Spring 21 Sec LT1
+Week 1
+ */
+
+public class Menu {
+
+    public static void main(String[] args) {
+        //declare variables
+        String studentName = "";
+        String studentYear = "";
+        // double for gpa
+        double studentGPA = -1;
+        // int for invalid input/unanswered question
+        int invalidInput = 0;
+        int missingInfo;
+        // initiate scanner
+        Scanner scnr = new Scanner(System.in);
+
+        // create string to hold user input
+        String userInput = "-1";
+
+        // open file
+        File myFile = new File(filePath(scnr));
+        System.out.println("Student Menu");
+        // print main menu
+        System.out.println("Main menu");
+        System.out.println("1. Enter student name");
+        System.out.println("2. Enter student grade year");
+        System.out.println("3. Enter student GPA");
+        System.out.println("4. Display student info");
+        System.out.println("5. Write data");
+        System.out.println("6. Read data");
+        System.out.println("7. Search file");
+        System.out.println("8. Delete");
+        System.out.println("9. Exit");
+
+        //switch case
+        switch(menu) {
+            case "1":
+                System.out.println("Enter students name: ");
+                studentName = scnr.next();
+                break;
+            case "2":
+                System.out.println("Enter students year: ");
+                studentYear = scnr.next().toLowerCase();
+                //check if input is valid
+                invalidInput = validEntry(studentYear, gpa: "0");
+                if (invalidInput > 0){
+                    studentYear = "";
+                }
+                break;
+            case "3":
+                System.out.println("Enter student GPA");
+                try {
+                    studentGPA = scnr.nextDouble();
+                    //check if input is valid
+                    invalidInput = validEntry(year: "senior", studentGPA);
+                    if (invalidInput > 0){
+                        studentGPA = -1;
+                    }
+                } catch (Exception ex) {
+                    System.out.println("Only a double value accepted, try again");
+                    studentGPA = -1;
+                    scnr.nextLine();
+                }
+                break;
+            case "4":
+                System.out.println();
+                System.out.println("Student name: " + studentName);
+                System.out.println("Student year: " + studentYear);
+                System.out.println("Student GPA: " + studentGPA);
+                System.out.println();
+                break;
+            case "5":
+                missingInfo = missingData(studentName, studentYear, studentGPA);
+                if(missingInfo == 0 && invalidInput == 0){
+                    writeToFile(studentName, studentYear, studentGPA, myFile);
+                    studentName = "";
+                    studentYear = "";
+                    studentGPA = 0.0;
+                }else {
+                    System.out.println("Invalid entry");
+                }
+                break;
+            case "6":
+                fileReader(myFile, studentName: null);
+                break;
+            case "7":
+                searchStudent(myFile, scnr);
+                break;
+            case "8":
+                deleteStudent(myFile, scnr);
+                break;
+            default:
+                System.out.println("Invalid input, please select a number 1-8");
+                scnr.nextLine();
+        }
+    }
+
+        public static String filePath (Scanner scan){
+            String file = "n";
+            String path = "";
+            System.out.print("Would you like to enter a custom File Path (yes/no): ");
+            file = scan.nextLine();
+            file = file.toLowerCase();
+            switch (file) {
+                case "yes":
+                    System.out.print("Enter the path you'd like to use (default: studentinfo.csv): ");
+                    path = scan.nextLine();
+                    break;
+                default:
+                    path = "studentinfo.csv";
+            }
+            return path;
+        }
+
+        public static void writeToFile (String name, String acYear,double gpa, File myFile){
+            String gpaString = String.valueOf((gpa));
+
+            // attempt to write file
+            try {
+                FileWriter myFileWriter = new FileWriter(myFile, true);
+                // check to see if file exists
+                if (!myFile.exists()) {
+                    System.out.println("\nFile created\n");
+                }
+                // write to the file.
+                myFileWriter.write(name + "," + acYear + "," + gpaString + "\n");
+                // close the file
+                myFileWriter.flush();
+                myFileWriter.close();
+                // catch errors
+            } catch (IOException e) {
+                System.out.println("\nError\n");
+                e.printStackTrace();
+            }
+        }
+
+        public static void fileReader (File myFile, String studentName){
+            String line = "";
+            try {
+                Scanner read = new Scanner(myFile);
+                while (read.hasNextLine()) {
+                    line = read.nextLine();
+                    if (studentName != null) {
+                        if (line.startsWith(studentName)) {
+                            printStudent(line);
+                        }
+                    } else {
+                        printStudent(line);
+                    }
+                }
+            } catch (Exception myEx) {
+                System.out.println("Error");
+            }
+        }
+
+        public static void printStudent (String line){
+            String[] csvLine = line.split(",");
+            System.out.println();
+            System.out.println("Student name: " + csvLine[0]);
+            System.out.println("Student year: " + csvLine[1]);
+            System.out.println("Student GPA: " + csvLine[2]);
+            System.out.println();
+        }
+
+        public static void searchStudent (File myFile, Scanner scnr){
+            System.out.print("Students Name: ");
+            String studentName = scnr.next();
+            fileReader(myFile, studentName);
+        }
+
+        public static void deleteStudent (File myFile, Scanner scnr){
+            System.out.print("Students Name: ");
+            String studentName = scnr.next();
+            try {
+                List<String> lines = Files.readAllLines(myFile.toPath());
+                myFile.delete();
+
+                for (String line : lines) {
+                    if (!line.startsWith(studentName)) {
+                        String[] csvLine = line.split(",");
+                        writeToFile(csvLine[0], csvLine[1], Double.parseDouble(csvLine[2]), myFile);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // check for missing input
+        public static int missingData (String name, String acYear,double gpa){
+            String[] question = {"Student Name", "Student Year", "Student GPA"};
+            int countMissing = 0;
+            if (name.isEmpty()) {
+                System.out.println("Student " + question[0] + "blank");
+                countMissing++;
+            }
+            if (acYear.isEmpty()) {
+                System.out.println("Student " + question[1] + "blank");
+                countMissing++;
+            }
+            if (gpa < 0) {
+                System.out.println("Student " + question[2] + "blank");
+                countMissing++;
+            }
+            return countMissing;
+        }
+
+        // method 3
+        public static int validEntry (String year,double gpa){
+            ArrayList<String> validAys = new ArrayList<String>();
+            validAys.add("freshman");
+            validAys.add("sophomore");
+            validAys.add("junior");
+            validAys.add("senior");
+
+            // parameter for GPA
+            double low = 0.0;
+            double high = 4.0;
+
+            // valid input check
+            if (!validAys.contains(year) && (gpa < low || gpa > high)) {
+                System.out.println("Invalid year and GPA input");
+                return 1;
+            } else if (!validAys.contains(year)) {
+                System.out.println("The academic year is invalid");
+                return 1;
+            } else if (gpa < low || gpa > high) {
+                System.out.println("The GPA entered is outside of the valid range");
+                return 1;
+            }
+            return 0;
+        }
+    private static void mainMenu() {
+        // print main menu
+        System.out.println("Main menu");
+        System.out.println("1. Enter student name");
+        System.out.println("2. Enter student grade year");
+        System.out.println("3. Enter student GPA");
+        System.out.println("4. Display student info");
+        System.out.println("5. Write data");
+        System.out.println("6. Read data");
+        System.out.println("7. Search file");
+        System.out.println("8. Delete");
+        System.out.println("9. Exit");
+    }
+}
