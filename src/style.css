@@ -4,3 +4,7 @@ h1, p {
 body {
   bsckground-color:lightgrey;
 }
+.content {
+  max-width: 500px;
+  margin: auto;
+}
